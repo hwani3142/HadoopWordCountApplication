@@ -1,27 +1,22 @@
 package kr.ac.yonsei.delab.hadoop_app;
 
 import java.io.IOException;
-import java.util.Iterator;
+//import java.util.Iterator;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-@SuppressWarnings("rawtypes")
-public class ReduceClass extends Reducer{
-
-	@SuppressWarnings("unchecked")
-	protected void reduce(Text key, Iterable values,
+public class ReduceClass extends Reducer<Text, IntWritable, Text, IntWritable>{
+	private IntWritable result = new IntWritable();
+	protected void reduce(Text key, Iterable<IntWritable> values,
 			Context context)
 			throws IOException, InterruptedException {
-	
 		int sum = 0;
-		Iterator valuesIt = values.iterator();
-		
-		while(valuesIt.hasNext()){
-			sum = sum + ((IntWritable) valuesIt.next()).get();
+		for (IntWritable val: values) {
+			sum += val.get();
 		}
-		
-		context.write(key, new IntWritable(sum));
+		result.set(sum);
+		context.write(key, result);
 	}	
 }
